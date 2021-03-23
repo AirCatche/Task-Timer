@@ -16,35 +16,35 @@
         android:textColor="@android:color/primary_text_light"
         android:textSize="22sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/edit_task"
+        app:layout_constraintEnd_toStartOf="@+id/ib_edit_task"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Task Name" />
 
     <TextView
-        android:id="@+id/task_description"
+        android:id="@+id/tv_task_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/edit_task"
+        app:layout_constraintEnd_toStartOf="@+id/ib_edit_task"
         app:layout_constraintStart_toStartOf="@+id/tv_task_name"
         app:layout_constraintTop_toBottomOf="@+id/tv_task_name"
         tools:text="Short Task Description" />
 
     <ImageButton
-        android:id="@+id/edit_task"
+        android:id="@+id/ib_edit_task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:contentDescription="@string/button_delete_task"
-        app:layout_constraintEnd_toStartOf="@+id/delete_task"
-        app:layout_constraintTop_toTopOf="@+id/delete_task"
+        app:layout_constraintEnd_toStartOf="@+id/ib_delete_task"
+        app:layout_constraintTop_toTopOf="@+id/ib_delete_task"
         app:srcCompat="@android:drawable/ic_menu_edit" />
 
     <ImageButton
-        android:id="@+id/delete_task"
+        android:id="@+id/ib_delete_task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

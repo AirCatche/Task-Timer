@@ -22,7 +22,7 @@ class Provider: ContentProvider() {
     private lateinit var openHelper: Database
 
     companion object{
-        const val TAG = "MyProvider"
+        const val TAG = "Provider"
         const val CONTENT_AUTHORITY = "com.example.tasktimer.provider"
         private const val TASKS = 100
         private const val TASKS_ID = 101
@@ -93,7 +93,10 @@ class Provider: ContentProvider() {
             }
         }
         val db: SQLiteDatabase = openHelper.readableDatabase
-        return queryBuilder.query(db,projection,selection,selectionArgs,null,null,sortOrder)
+        val cursor: Cursor = queryBuilder.query(db,projection,selection,selectionArgs,null,null,sortOrder)
+        Log.d(TAG, "query:  rows returned = ${cursor.columnNames}")
+        cursor.setNotificationUri(context?.contentResolver, uri)
+        return cursor
 
     }
 
@@ -115,7 +118,7 @@ class Provider: ContentProvider() {
         Log.d(TAG, "Entering insert with uri: $uri")
         val db: SQLiteDatabase
         val recordId: Long
-        return when(uriMatcher.match(uri)) {
+        val returnUri =  when(uriMatcher.match(uri)) {
             TASKS -> {
                 db = openHelper.writableDatabase
                 recordId = db.insert(TaskContract.TABLE_NAME,null,values)
@@ -125,6 +128,9 @@ class Provider: ContentProvider() {
                     throw SQLException("Failed insert into $uri")
                 }
             }
+//            TASKS_ID -> {
+//
+//            }
 //            TIMINGS -> {
 //                db = openHelper.writableDatabase
 //                recordId = db.insert(TimingContract.BuildUri.buildTimingUri(recordId))
@@ -138,8 +144,16 @@ class Provider: ContentProvider() {
 //            TIMINGS_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
 //            TASK_DURATION -> { return TaskContract.CONTENT_TYPE}
 //            TASK_DURATION_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
-            else -> { throw IllegalArgumentException("Unknown URI: $uri") }
+            else -> {
+                throw IllegalArgumentException("Unknown URI: $uri")
+            }
         }
+        if (recordId >= 0) {
+            Log.d(TAG, "insert: Setting notifyChanged $uri")
+            context!!.contentResolver.notifyChange(uri, null)
+        }
+        Log.d(TAG, "insert: Exiting with uri $returnUri")
+        return returnUri
 
     }
 
@@ -147,10 +161,11 @@ class Provider: ContentProvider() {
         Log.d(TAG, "delete called with URI: $uri")
         val db: SQLiteDatabase
         var selectionCriteria: String
-        return when(uriMatcher.match(uri)) {
+        var deletedEntries: Int
+        when(uriMatcher.match(uri)) {
             TASKS -> {
                 db = openHelper.writableDatabase
-                db.delete(TaskContract.TABLE_NAME,selection, selectionArgs)
+                deletedEntries = db.delete(TaskContract.TABLE_NAME,selection, selectionArgs)
             }
             TASKS_ID -> {
                 db = openHelper.writableDatabase
@@ -159,11 +174,11 @@ class Provider: ContentProvider() {
                 if ((selection != null) && (selection.isNotEmpty())) {
                     selectionCriteria += " AND ($selection)"
                 }
-                db.delete(TaskContract.TABLE_NAME,selectionCriteria, selectionArgs)
+                deletedEntries = db.delete(TaskContract.TABLE_NAME,selectionCriteria, selectionArgs)
             }
 //            TIMINGS -> {
 //                db = openHelper.writableDatabase
-//                db.delete(TimingContract.TABLE_NAME,selection, selectionArgs)
+//                deletedEntries = db.delete(TimingContract.TABLE_NAME,selection, selectionArgs)
 //            }
 //            TIMINGS_ID -> {
 //                db = openHelper.writableDatabase
@@ -172,23 +187,31 @@ class Provider: ContentProvider() {
 //                if ((selection != null) && (selection.isNotEmpty())) {
 //                    selectionCriteria += " AND ($selection)"
 //                }
-//                db.delete(TimingContract.TABLE_NAME,selectionCriteria, selectionArgs)
+//                deletedEntries = db.delete(TimingContract.TABLE_NAME,selectionCriteria, selectionArgs)
 //            }
             else -> {
                 throw IllegalArgumentException("Unknown URI: $uri")
             }
         }
+        if (deletedEntries > 0) {
+            Log.d(TAG, "Deleted $deletedEntries entries")
+            context!!.contentResolver.notifyChange(uri,null)
+        } else {
+            Log.d(TAG, "Nothing deleted")
+        }
+        return deletedEntries
     }
 
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
         Log.d(TAG, "update called with URI: $uri")
         val db: SQLiteDatabase
         var selectionCriteria: String
+        val updatedEntries: Int
         Log.d(TAG, "update: match is ${uriMatcher.match(uri)}")
-        return when(uriMatcher.match(uri)) {
+        when(uriMatcher.match(uri)) {
             TASKS -> {
                 db = openHelper.writableDatabase
-                db.update(TaskContract.TABLE_NAME,values,selection, selectionArgs)
+                updatedEntries = db.update(TaskContract.TABLE_NAME,values,selection, selectionArgs)
             }
             TASKS_ID -> {
                 db = openHelper.writableDatabase
@@ -197,7 +220,7 @@ class Provider: ContentProvider() {
                 if ((selection != null) && (selection.isNotEmpty())) {
                     selectionCriteria += " AND ($selection)"
                 }
-                db.update(TaskContract.TABLE_NAME,values,selectionCriteria, selectionArgs)
+                updatedEntries = db.update(TaskContract.TABLE_NAME,values,selectionCriteria, selectionArgs)
             }
 //            TIMINGS -> {
 //                db = openHelper.writableDatabase
@@ -216,5 +239,12 @@ class Provider: ContentProvider() {
                 throw IllegalArgumentException("Unknown URI: $uri")
             }
         }
+        if (updatedEntries > 0) {
+            Log.d(TAG, "Updated $updatedEntries entries")
+            context!!.contentResolver.notifyChange(uri,null)
+        } else {
+            Log.d(TAG, "Nothing updated")
+        }
+        return updatedEntries
     }
 }

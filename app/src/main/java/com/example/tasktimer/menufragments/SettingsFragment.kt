@@ -1,13 +1,14 @@
-package com.example.tasktimer
+package com.example.tasktimer.menufragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.tasktimer.R
 
-class TasksCreationFragment : Fragment() {
+class SettingsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_creation, container, false)
+        return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 }

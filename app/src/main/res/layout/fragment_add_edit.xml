@@ -5,7 +5,7 @@
     android:id="@+id/csl_addtask_edit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddEditActivity">
+    tools:context=".TaskEditorActivity">
 
     <EditText
         android:id="@+id/et_addtasks_name"
