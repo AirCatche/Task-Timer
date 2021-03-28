@@ -17,6 +17,10 @@
     <style name="Theme.TaskTimer.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+<!--        <item name="android:windowDrawsSystemBarBackgrounds">false</item>-->
+<!--        <item name="android:windowTranslucentNavigation">false</item>-->
+<!--        <item name="android:fitsSystemWindows">true</item>-->
+
     </style>
 
     <style name="Theme.TaskTimer.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

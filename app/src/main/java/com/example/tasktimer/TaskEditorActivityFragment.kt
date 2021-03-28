@@ -1,6 +1,7 @@
 package com.example.tasktimer
 
 import android.content.ContentValues
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import java.lang.ClassCastException
 
 class TaskEditorActivityFragment : Fragment() {
 
@@ -16,13 +18,30 @@ class TaskEditorActivityFragment : Fragment() {
     private lateinit var description: EditText
     private lateinit var sortOrder: EditText
     private lateinit var save: Button
+    private var saveListener: OnSaveClicked? = null
     private var fragmentMode: FragmentEditMode = FragmentEditMode.ADD
     companion object {
         private const val TAG = "AddEditActivityFragment"
     }
     private enum class FragmentEditMode { EDIT, ADD}
 
+    override fun onAttach(context: Context) {
+        Log.d(TAG, "onAttach: starts")
+        super.onAttach(context)
 
+        //Activities containing this fragment must implements it's callbacks
+        val activity = activity
+        if (activity !is OnSaveClicked) {
+            throw ClassCastException(activity?.javaClass?.simpleName + "must implement OnSaveClicked")
+        }
+        saveListener = activity
+    }
+
+    override fun onDetach() {
+        Log.d(TAG, "onDetach: starts")
+        super.onDetach()
+        saveListener = null
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG, "onCreateView: starts")
@@ -31,7 +50,9 @@ class TaskEditorActivityFragment : Fragment() {
         description = view.findViewById(R.id.et_addtasks_description)
         sortOrder = view.findViewById(R.id.et_addtasks_sortorder)
         save = view.findViewById(R.id.btn_addtasks_save)
-        val args = activity?.intent?.extras
+
+        //val args = activity?.intent?.extras
+        val args = arguments
         Log.d(TAG, "onCreateView: $args")
         val sortOrderValue = if (sortOrder.length() > 0) {
             sortOrder.text.toString().toInt()
@@ -64,6 +85,7 @@ class TaskEditorActivityFragment : Fragment() {
                     }
                 }
             }
+            saveListener?.onSaveClicked()
         }
         Log.d(TAG, "onCreateView: R.I.P.")
         return view

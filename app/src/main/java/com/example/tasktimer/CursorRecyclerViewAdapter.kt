@@ -24,7 +24,7 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?, private val listene
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         if (cursor == null || cursor!!.count == 0) {
-            holder.name.setText(R.string.insruction_heading)
+            holder.name.setText(R.string.instruction_heading)
             holder.description.setText(R.string.instruction_description)
             holder.editButton.visibility = View.GONE
             holder.deleteButton.visibility = View.GONE
