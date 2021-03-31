@@ -23,7 +23,7 @@ class TaskEditorActivityFragment : Fragment() {
     companion object {
         private const val TAG = "AddEditActivityFragment"
     }
-    private enum class FragmentEditMode { EDIT, ADD}
+    private enum class FragmentEditMode {EDIT, ADD}
 
     override fun onAttach(context: Context) {
         Log.d(TAG, "onAttach: starts")
@@ -90,7 +90,6 @@ class TaskEditorActivityFragment : Fragment() {
         Log.d(TAG, "onCreateView: R.I.P.")
         return view
     }
-
     private fun editTask(args: Bundle?) : Task? {
         var task: Task? = null
         Log.d(TAG, "editTask: $args")
@@ -111,5 +110,10 @@ class TaskEditorActivityFragment : Fragment() {
         }
         return task
     }
+    fun canClose () : Boolean {
+        return false
+
+    }
+
 }
 

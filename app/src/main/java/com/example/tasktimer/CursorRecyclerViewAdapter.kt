@@ -1,7 +1,6 @@
 package com.example.tasktimer
 
 import android.database.Cursor
-import android.util.LayoutDirection
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +15,7 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?, private val listene
         private const val TAG = "CursorRecyclerViewAdapt"
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int, ): TaskViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         Log.d(TAG, "onCreateViewHolder: new view requested")
         return TaskViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.task_list_item, parent, false))
 
@@ -30,7 +29,7 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?, private val listene
             holder.deleteButton.visibility = View.GONE
         } else {
             if (!cursor!!.moveToPosition(position)) {
-                throw IllegalStateException("Couldn't move cursor ro position $position")
+                throw IllegalStateException("Couldn't move cursor to position $position")
             }
             val task = Task(cursor!!.getLong(cursor!!.getColumnIndex(TaskContract.Columns._ID)),
                 cursor!!.getString(cursor!!.getColumnIndex(TaskContract.Columns.TASKS_NAME)),
@@ -40,8 +39,6 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?, private val listene
 
             holder.name.text = task.name
             holder.description.text = task.description
-
-            //TODO add onClickListener
             holder.editButton.visibility = View.VISIBLE
             holder.deleteButton.visibility = View.VISIBLE
 
@@ -56,14 +53,21 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?, private val listene
                 }
 
             }
+
             holder.editButton.setOnClickListener(buttonListener)
             holder.deleteButton.setOnClickListener(buttonListener)
+
+
         }
 
     }
 
     override fun getItemCount(): Int {
-         return cursor?.count ?: 1
+         return if (cursor == null || cursor!!.count == 0) {
+             1
+         } else {
+             cursor!!.count
+         }
     }
 
     /**

@@ -19,7 +19,7 @@ import com.example.tasktimer.TaskContract
 import java.security.InvalidParameterException
 
 class TasksDurationFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
-    private lateinit var durationTaskAdapter: CursorRecyclerViewAdapter
+    private var taskCursorAdapter: CursorRecyclerViewAdapter? = null
     companion object {
         private const val TAG = "TasksDurationFragment"
         const val LOADER_ID = 0
@@ -36,8 +36,8 @@ class TasksDurationFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> 
         val view = inflater.inflate(R.layout.fragment_tasks, container, false)
         val recyclerView: RecyclerView = view.findViewById(R.id.task_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        durationTaskAdapter = CursorRecyclerViewAdapter(null, activity as OnTaskClickListener)
-        recyclerView.adapter = durationTaskAdapter
+        taskCursorAdapter = CursorRecyclerViewAdapter(null, activity as OnTaskClickListener)
+        recyclerView.adapter = taskCursorAdapter
 
         Log.d(TAG, "onCreateView: returning")
         return view
@@ -61,13 +61,14 @@ class TasksDurationFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> 
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
         Log.d(TAG, "onLoadFinished: entering")
-        durationTaskAdapter.swapCursor(data)
-        val count = durationTaskAdapter.itemCount
+        Log.d(TAG, "onLoadFinished: $data")
+        taskCursorAdapter?.swapCursor(data)
+        val count = taskCursorAdapter?.itemCount
         Log.d(TAG, "onLoadFinished: with $count entries")
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
         Log.d(TAG, "onLoaderReset: starts")
-        durationTaskAdapter.swapCursor(null)
+        taskCursorAdapter?.swapCursor(null)
     }
 }

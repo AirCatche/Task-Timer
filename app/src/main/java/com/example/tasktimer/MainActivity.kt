@@ -9,11 +9,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.tasktimer.menufragments.AboutFragment
 import com.example.tasktimer.menufragments.SearchFragment
 import com.example.tasktimer.menufragments.SettingsFragment
 import com.example.tasktimer.menufragments.TasksDurationFragment
+
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.lang.AssertionError
@@ -24,13 +26,17 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
 
     companion object {
         private const val TAG = "MainActivity"
+        const val DIALOG_ID_DELETE = 1
+        const val DIALOG_ID_CANCEL_EDIT = 2
+        private var CACHED_BOTTOM_ITEM_ID: Int? = null
+        private var CACHED_BOTTOM_ITEM_KEY: String = "cachedBottomItemId"
 
         //landscapeMode
-        private var twoPane = false
-        private const val DELETE_DIALOG_ID = 1
-        private var CACHED_BOTTOM_ITEM_ID: Int? = null
+        var twoPane: Boolean = false
+        var editMode: Boolean = false
     }
 
+    //TODO("implement hide on scroll nested activity")
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate: starts")
         super.onCreate(savedInstanceState)
@@ -91,6 +97,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     override fun onStart() {
         super.onStart()
         if (CACHED_BOTTOM_ITEM_ID != null) {
@@ -119,41 +126,85 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
                 .replace(R.id.fragment_layout, TasksDurationFragment()).commit()
         }
     }
+
     override fun onEditClick(task: Task) {
+        editMode = true
         editTask(task)
     }
+
     override fun onDeleteTask(task: Task) {
         Log.d(TAG, "onDeleteTask: starts")
         val dialog = AppDialog()
         val dialogArgs = Bundle()
-        dialogArgs.putInt(AppDialog.DIALOG_ID, DELETE_DIALOG_ID)
-        dialogArgs.putString(AppDialog.DIALOG_MESSAGE, getString(R.string.deldiag_message, task._id, task.name))
+        dialogArgs.putInt(AppDialog.DIALOG_ID, DIALOG_ID_DELETE)
+        dialogArgs.putString(AppDialog.DIALOG_MESSAGE,
+            getString(R.string.deldiag_message, task._id, task.name))
         dialogArgs.putInt(AppDialog.DIALOG_POSITIVE_RID, (R.string.deldiag_positive_caption))
         dialogArgs.putLong("TaskId", task._id)
 
         dialog.arguments = dialogArgs
         dialog.show(supportFragmentManager, null)
     }
+
     override fun onSaveClicked() {
         val fragment = supportFragmentManager.findFragmentById(R.id.fragment_task_details)
         fragment?.let {
             supportFragmentManager.beginTransaction().remove(it).commit()
         }
     }
+
     override fun onPositiveDialogResult(dialogId: Int, args: Bundle) {
         Log.d(TAG, "onPositiveDialogResult: ")
-        val taskId: Long = args.getLong("TaskId")
-        if (BuildConfig.DEBUG && taskId == 0L) throw AssertionError("Task ID is zero")
-        contentResolver.delete(TaskContract.UriBuilder.buildTaskUri(taskId), null, null)
+        when (dialogId) {
+            DIALOG_ID_DELETE -> {
+                val taskId: Long = args.getLong("TaskId")
+                if (BuildConfig.DEBUG && taskId == 0L) throw AssertionError("Task ID is zero")
+                contentResolver.delete(TaskContract.UriBuilder.buildTaskUri(taskId), null, null)
+            }
+            DIALOG_ID_CANCEL_EDIT -> {
+
+            }
+        }
+
     }
 
     override fun onNegativeDialogResult(dialogId: Int, args: Bundle) {
         Log.d(TAG, "onNegativeDialogResult: ")
+        when (dialogId) {
+            DIALOG_ID_DELETE -> {
+                //no action required
+            }
+            DIALOG_ID_CANCEL_EDIT -> {
+                finish()
+            }
+        }
     }
 
     override fun onDialogCancelled(dialogId: Int) {
         Log.d(TAG, "onDialogCancelled: ")
     }
+
+    override fun onBackPressed() {
+        Log.d(TAG, "onBackPressed: starts")
+
+        val fragment: TaskEditorActivityFragment? = supportFragmentManager.findFragmentById(R.id.fragment_task_details) as TaskEditorActivityFragment?
+        if (fragment == null || fragment.canClose()) {
+            super.onBackPressed()
+        } else {
+            val dialog = AppDialog()
+            val args = Bundle().also {
+                it.putInt(AppDialog.DIALOG_ID, DIALOG_ID_CANCEL_EDIT)
+                it.putString(AppDialog.DIALOG_MESSAGE, getString(R.string.editDiag_cancelMessage))
+                it.putInt(AppDialog.DIALOG_POSITIVE_RID, R.string.edinDiag_positive_caption)
+                it.putInt(AppDialog.DIALOG_NEGATIVE_RID, R.string.edinDiag_negative_caption)
+            }
+
+            dialog.arguments = args
+            dialog.show(supportFragmentManager, null)
+        }
+
+    }
+
 
     private fun editTask(task: Task?) {
         Log.d(TAG, "editTask: starts")
@@ -176,11 +227,11 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
-        outState.putInt("cachedMenuItemId", bottomNav.selectedItemId)
+        outState.putInt(CACHED_BOTTOM_ITEM_KEY, bottomNav.selectedItemId)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        bottomNav.selectedItemId = savedInstanceState.getInt("cachedMenuItemId")
+        bottomNav.selectedItemId = savedInstanceState.getInt(CACHED_BOTTOM_ITEM_KEY)
     }
 }

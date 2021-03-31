@@ -27,5 +27,17 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="deldiag_positive_caption">Delete</string>
-    <string name="deldiag_message">Confirm task deletion and timing related to it with:\nID: %1$d\nName: %2$s</string>>
+    <string name="deldiag_message">Confirm task deletion and timing related to it with:\nID: %1$d\nName: %2$s</string>
+    <string name="editDiag_cancelMessage">You have unsaved changes, do you want to abandon or continue editing?</string>
+    <string name="edinDiag_positive_caption">Continue</string>
+    <string name="edinDiag_negative_caption">Abandon</string>
+    <string name="about_version">v. 1.0.0</string>
+    <string name="about__mainHeading">Task Timer</string>
+    <string name="about_info">\tIt is simple application created for people, which like manage time and who want ged rid of laziness in routine life by setting a goal and time restriction for each task. It keeps you in shape due to annoying notification, and generally all kind of possible signal until you done task.</string>
+    <string name="about_header_info">1.About app</string>
+    <string name="about_header_instruction">2.How to use</string>
+    <string name="about_instruction">\tClick + button to add task \n\tSwipe task left if you want delete it \n\tFor editing task hold on it for few seconds</string>
+    <string name="about_header_support">3.Support</string>
+    <string name="about_support">\tIf you find a bug or strange behaviour please give a clear description of your problem in a letter on our support email: \n\t <i><u>caxi.tabb@gmail.com</u></i></string>
+    >
 </resources>
