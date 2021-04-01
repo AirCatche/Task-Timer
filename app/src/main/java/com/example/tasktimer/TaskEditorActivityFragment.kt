@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import java.lang.ClassCastException
 
@@ -28,8 +30,6 @@ class TaskEditorActivityFragment : Fragment() {
     override fun onAttach(context: Context) {
         Log.d(TAG, "onAttach: starts")
         super.onAttach(context)
-
-        //Activities containing this fragment must implements it's callbacks
         val activity = activity
         if (activity !is OnSaveClicked) {
             throw ClassCastException(activity?.javaClass?.simpleName + "must implement OnSaveClicked")
@@ -37,10 +37,19 @@ class TaskEditorActivityFragment : Fragment() {
         saveListener = activity
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        val mainActivity = activity as AppCompatActivity
+        mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
     override fun onDetach() {
         Log.d(TAG, "onDetach: starts")
         super.onDetach()
         saveListener = null
+        val mainActivity = activity as AppCompatActivity
+        val actionBar: ActionBar? = mainActivity.supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -51,7 +60,6 @@ class TaskEditorActivityFragment : Fragment() {
         sortOrder = view.findViewById(R.id.et_addtasks_sortorder)
         save = view.findViewById(R.id.btn_addtasks_save)
 
-        //val args = activity?.intent?.extras
         val args = arguments
         Log.d(TAG, "onCreateView: $args")
         val sortOrderValue = if (sortOrder.length() > 0) {
@@ -61,7 +69,6 @@ class TaskEditorActivityFragment : Fragment() {
         }
 
         val task = editTask(args)
-
         save.setOnClickListener {
             val contentResolver = activity?.contentResolver
             val values = ContentValues()

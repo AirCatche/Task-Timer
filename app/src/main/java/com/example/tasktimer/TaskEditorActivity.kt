@@ -10,7 +10,7 @@ class TaskEditorActivity : AppCompatActivity(), OnSaveClicked, DialogEvents {
 
     companion object{
         private const val TAG = "AddEditActivity"
-        private const val DIALOG_ID_CANCEL_EDIT = 1
+        const val DIALOG_ID_CANCEL_EDIT = 1
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
