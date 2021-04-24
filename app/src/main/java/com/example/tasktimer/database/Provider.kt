@@ -1,4 +1,4 @@
-package com.example.tasktimer
+package com.example.tasktimer.database
 
 import android.content.ContentProvider
 import android.content.ContentValues
@@ -6,11 +6,9 @@ import android.content.UriMatcher
 import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteQuery
 import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
 import android.util.Log
-import java.net.URI
 
 /**
 * Provider for the TaskTimer.
@@ -55,7 +53,7 @@ class Provider: ContentProvider() {
         return true
     }
 
-    override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
+    override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor {
 
         Log.d(TAG, "query: called URI: $uri")
         val match = uriMatcher.match(uri)
@@ -100,7 +98,7 @@ class Provider: ContentProvider() {
 
     }
 
-    override fun getType(uri: Uri): String? {
+    override fun getType(uri: Uri): String {
         return when(uriMatcher.match(uri)) {
              TASKS -> TaskContract.CONTENT_TYPE
 
@@ -114,7 +112,7 @@ class Provider: ContentProvider() {
          }
     }
 
-    override fun insert(uri: Uri, values: ContentValues?): Uri? {
+    override fun insert(uri: Uri, values: ContentValues?): Uri {
         Log.d(TAG, "Entering insert with uri: $uri")
         val db: SQLiteDatabase
         val recordId: Long
@@ -161,7 +159,7 @@ class Provider: ContentProvider() {
         Log.d(TAG, "delete called with URI: $uri")
         val db: SQLiteDatabase
         var selectionCriteria: String
-        var deletedEntries: Int
+        val deletedEntries: Int
         when(uriMatcher.match(uri)) {
             TASKS -> {
                 db = openHelper.writableDatabase

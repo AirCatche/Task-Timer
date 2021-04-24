@@ -1,4 +1,4 @@
-package com.example.tasktimer
+package com.example.tasktimer.database
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

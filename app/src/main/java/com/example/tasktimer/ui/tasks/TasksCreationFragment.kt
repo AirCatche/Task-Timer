@@ -1,4 +1,4 @@
-package com.example.tasktimer.menufragments
+package com.example.tasktimer.ui.tasks
 
 import android.os.Bundle
 import android.view.LayoutInflater

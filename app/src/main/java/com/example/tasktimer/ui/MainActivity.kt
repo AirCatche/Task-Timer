@@ -1,6 +1,5 @@
-package com.example.tasktimer
+package com.example.tasktimer.ui
 
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -10,12 +9,16 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.tasktimer.menufragments.AboutFragment
-import com.example.tasktimer.menufragments.SearchFragment
-import com.example.tasktimer.menufragments.SettingsFragment
-import com.example.tasktimer.menufragments.TasksDurationFragment
+import com.example.tasktimer.*
+import com.example.tasktimer.database.TaskContract
+import com.example.tasktimer.database.entity.Task
+import com.example.tasktimer.ui.about.AboutFragment
+import com.example.tasktimer.ui.search.SearchFragment
+import com.example.tasktimer.ui.settings.SettingsFragment
+import com.example.tasktimer.ui.tasks.TaskEditorActivityFragment
+import com.example.tasktimer.ui.tasks.TasksDurationFragment
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -58,9 +61,6 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
         bottomNav.itemTextAppearanceActive = 0
 
 
-//        if (findViewById<FrameLayout>(R.id.fragment_task_details) != null) {
-//            twoPane = true
-//        }
         setScreenFragment()
         Log.d(TAG, "onCreate: ends")
     }
@@ -178,6 +178,11 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
 
         dialog.arguments = dialogArgs
         dialog.show(supportFragmentManager, null)
+    }
+
+    override fun onTaskLongClick(task: Task) {
+        Log.d(TAG, "onTaskLongClick: called")
+        Toast.makeText(this, "Task ${task._id} clicked",Toast.LENGTH_SHORT).show()
     }
 
     override fun onSaveClicked() {

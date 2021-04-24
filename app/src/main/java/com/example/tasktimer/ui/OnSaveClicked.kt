@@ -1,4 +1,4 @@
-package com.example.tasktimer
+package com.example.tasktimer.ui
 
 interface OnSaveClicked {
     fun onSaveClicked()

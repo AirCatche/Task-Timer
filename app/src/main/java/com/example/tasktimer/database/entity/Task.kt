@@ -1,4 +1,4 @@
-package com.example.tasktimer
+package com.example.tasktimer.database.entity
 
 import java.io.Serializable
 

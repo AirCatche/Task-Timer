@@ -1,4 +1,4 @@
-package com.example.tasktimer
+package com.example.tasktimer.ui.tasks
 
 import android.content.ContentValues
 import android.content.Context
@@ -12,6 +12,10 @@ import android.widget.EditText
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.tasktimer.R
+import com.example.tasktimer.database.TaskContract
+import com.example.tasktimer.database.entity.Task
+import com.example.tasktimer.ui.OnSaveClicked
 import java.lang.ClassCastException
 
 class TaskEditorActivityFragment : Fragment() {
@@ -119,7 +123,6 @@ class TaskEditorActivityFragment : Fragment() {
     }
     fun canClose () : Boolean {
         return false
-
     }
 
 }

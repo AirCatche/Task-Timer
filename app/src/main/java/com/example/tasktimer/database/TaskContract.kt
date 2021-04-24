@@ -1,4 +1,4 @@
-package com.example.tasktimer
+package com.example.tasktimer.database
 
 import android.content.ContentUris
 import android.net.Uri

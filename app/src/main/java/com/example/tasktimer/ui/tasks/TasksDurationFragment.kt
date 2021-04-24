@@ -1,4 +1,4 @@
-package com.example.tasktimer.menufragments
+package com.example.tasktimer.ui.tasks
 
 import android.database.Cursor
 import android.os.Bundle
@@ -12,13 +12,16 @@ import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tasktimer.CursorRecyclerViewAdapter
-import com.example.tasktimer.OnTaskClickListener
-import com.example.tasktimer.R
-import com.example.tasktimer.TaskContract
+import com.example.tasktimer.*
+import com.example.tasktimer.database.TaskContract
+import com.example.tasktimer.database.entity.Task
+import com.example.tasktimer.ui.CursorRecyclerViewAdapter
+import com.example.tasktimer.ui.OnTaskClickListener
+import java.lang.ClassCastException
 import java.security.InvalidParameterException
 
-class TasksDurationFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
+class TasksDurationFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor>,
+    OnTaskClickListener {
     private var taskCursorAdapter: CursorRecyclerViewAdapter? = null
     companion object {
         private const val TAG = "TasksDurationFragment"
@@ -28,6 +31,11 @@ class TasksDurationFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         Log.d(TAG, "onActivityCreated: starts")
         super.onActivityCreated(savedInstanceState)
+        val activity = activity
+        if (activity !is OnTaskClickListener) {
+            throw ClassCastException(activity?.javaClass?.simpleName + "must implement OnTaskClickListener")
+        }
+
         LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this)
     }
 
@@ -36,13 +44,19 @@ class TasksDurationFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> 
         val view = inflater.inflate(R.layout.fragment_tasks, container, false)
         val recyclerView: RecyclerView = view.findViewById(R.id.task_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        taskCursorAdapter = CursorRecyclerViewAdapter(null, activity as OnTaskClickListener)
+        if (taskCursorAdapter == null) {
+            taskCursorAdapter = CursorRecyclerViewAdapter(null, this)
+        }
         recyclerView.adapter = taskCursorAdapter
-
         Log.d(TAG, "onCreateView: returning")
         return view
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: starts")
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+    }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         Log.d(TAG, "onCreateLoader: starts with $id id")
@@ -70,5 +84,24 @@ class TasksDurationFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> 
     override fun onLoaderReset(loader: Loader<Cursor>) {
         Log.d(TAG, "onLoaderReset: starts")
         taskCursorAdapter?.swapCursor(null)
+    }
+
+    override fun onEditClick(task: Task) {
+        Log.d(TAG, "onEditClick: called")
+        val listener = activity as OnTaskClickListener
+        listener.onEditClick(task)
+
+    }
+
+    override fun onDeleteTask(task: Task) {
+        Log.d(TAG, "onDeleteTask: starts")
+        val listener = activity as OnTaskClickListener
+        listener.onDeleteTask(task)
+    }
+
+    override fun onTaskLongClick(task: Task) {
+        Log.d(TAG, "onLongClickTask: starts")
+        val listener = activity as OnTaskClickListener
+        listener.onTaskLongClick(task)
     }
 }
