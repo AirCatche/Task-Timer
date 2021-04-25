@@ -116,10 +116,10 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-        if (BuildConfig.DEBUG) {
-            val generate = menu.findItem(R.id.action_generate_data)
-            generate.isVisible = true
-        }
+//        if (BuildConfig.DEBUG) {
+//            val generate = menu.findItem(R.id.action_generate_data)
+//            generate.isVisible = true
+//        }
         return true
     }
 

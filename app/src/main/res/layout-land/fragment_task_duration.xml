@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <TextView
+        android:id="@+id/tv_heading_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/tv_heading_style"
+        android:elevation="2dp"
+        android:padding="2dp"
+        android:text="@string/tv_duration_header_name"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@id/tv_heading_description"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_heading_start"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/tv_heading_style"
+        android:elevation="2dp"
+        android:padding="2dp"
+        android:text="@string/tv_duration_heading_duration"
+        android:textAlignment="center"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_heading_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/tv_heading_duration" />
+
+    <TextView
+        android:id="@+id/tv_heading_duration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/tv_heading_style"
+        android:elevation="2dp"
+        android:padding="2dp"
+        android:text="@string/tv_duration_heading_date"
+        android:textAlignment="center"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_heading_start"
+        app:layout_constraintEnd_toStartOf="@id/tv_heading_start"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/tv_heading_description" />
+
+    <TextView
+        android:id="@+id/tv_heading_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_duration_heading_description"
+        android:background="@drawable/tv_heading_style"
+        android:elevation="2dp"
+        android:padding="2dp"
+        android:textAlignment="center"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_heading_name"
+        app:layout_constraintEnd_toStartOf="@id/tv_heading_duration"
+        app:layout_constraintStart_toEndOf="@id/tv_heading_name"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_weight="1"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_heading_name"
+        app:layout_constraintVertical_bias="0.0"
+        tools:listitem="@layout/task_duration_items" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

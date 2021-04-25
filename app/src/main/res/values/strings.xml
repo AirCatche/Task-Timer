@@ -39,5 +39,9 @@
     <string name="about_instruction">\tClick + button to add task \n\tSwipe task left if you want delete it \n\tFor editing task hold on it for few seconds</string>
     <string name="about_header_support">3.Support</string>
     <string name="about_support">\tIf you find a bug or strange behaviour please give a clear description of your problem in a letter on our support email: \n\t <i><u>caxi.tabb@gmail.com</u></i></string>
+    <string name="tv_duration_header_name">Name</string>
+    <string name="tv_duration_heading_duration">Duration</string>
+    <string name="tv_duration_heading_date">Date</string>
+    <string name="tv_duration_heading_description">Description</string>
     >
 </resources>

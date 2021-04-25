@@ -10,7 +10,10 @@ import android.util.Log
  * The only class that should use DB is [Provider].
  */
 
-class Database private constructor(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,null, DATABASE_VERSION) {
+class Database private constructor(context: Context) : SQLiteOpenHelper(context,
+    DATABASE_NAME,
+    null,
+    DATABASE_VERSION) {
 
     companion object{
         const val TAG = "Database"
@@ -39,13 +42,17 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
         db?.execSQL(sql)
 
         addTimingTable(db)
+        addDurationView(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d(TAG, "onUpgrade: starts")
         when(oldVersion) {
-            1 ->{
+            1 -> {
                 addTimingTable(db)
+            }
+            2 -> {
+                addDurationView(db)
             }
             else -> {
                 throw IllegalStateException("onUpgrade() with unknown newVersion: $newVersion")
@@ -54,7 +61,7 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
         Log.d(TAG, "onUpgrade: ends")
     }
 
-    private fun addTimingTable (db: SQLiteDatabase?) {
+    private fun addTimingTable(db: SQLiteDatabase?) {
         var sql = "CREATE TABLE ${TimingContract.TABLE_NAME} (" +
                 "${TimingContract.Columns._ID} INTEGER PRIMARY KEY NOT NULL, " +
                 "${TimingContract.Columns.TIMINGS_TASK_ID} INTEGER NOT NULL, " +
@@ -76,6 +83,35 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
         db?.execSQL(sql)
     }
 
-
-
+    private fun addDurationView(db: SQLiteDatabase?) {
+        /*
+         CREATE VIEW vwTaskDurations AS
+         SELECT Timings._id,
+         Tasks.Name,
+         Tasks.Description,
+         Timings.StartTime,
+         DATE(Timings.StartTime, 'unixepoch') AS StartDate,
+         SUM(Timings.Duration) AS Duration
+         FROM Tasks INNER JOIN Timings
+         ON Tasks._id = Timings.TaskId
+         GROUP BY Tasks._id, StartDate;
+         */
+        val sSQL = ("CREATE VIEW " + DurationContract.TABLE_NAME
+                + " AS SELECT " + TimingContract.TABLE_NAME + "." + TimingContract.Columns._ID + ", "
+                + TaskContract.TABLE_NAME + "." + TaskContract.Columns.TASKS_NAME + ", "
+                + TaskContract.TABLE_NAME + "." + TaskContract.Columns.TASKS_DESCRIPTION + ", "
+                + TimingContract.TABLE_NAME + "." + TimingContract.Columns.TIMINGS_START_TIME + ","
+                + " DATE(" + TimingContract.TABLE_NAME + "." + TimingContract.Columns.TIMINGS_START_TIME
+                + ", 'unixepoch')"
+                + " AS " + DurationContract.Columns.DURATION_START_DATE + ","
+                + " SUM(" + TimingContract.TABLE_NAME + "." + TimingContract.Columns.TIMINGS_DURATION + ")"
+                + " AS " + DurationContract.Columns.DURATION_DURATION
+                + " FROM " + TaskContract.TABLE_NAME + " JOIN " + TimingContract.TABLE_NAME
+                + " ON " + TaskContract.TABLE_NAME + "." + TaskContract.Columns._ID + " = "
+                + TimingContract.TABLE_NAME) + ".${TimingContract.Columns.TIMINGS_TASK_ID} GROUP BY " +
+                "${DurationContract.Columns.DURATION_START_DATE}, ${DurationContract.Columns.DURATION_NAME};"
+        db?.execSQL(sSQL)
+    }
 }
+
+

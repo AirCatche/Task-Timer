@@ -43,9 +43,9 @@ class Provider: ContentProvider() {
 
         uriMatcher.addURI(CONTENT_AUTHORITY, TimingContract.TABLE_NAME, TIMINGS)
         uriMatcher.addURI(CONTENT_AUTHORITY, "${TimingContract.TABLE_NAME}/#", TIMINGS_ID)
-//
-//        uriMatcher.addURI(CONTENT_AUTHORITY, DurationContract.TABLE_NAME, TASK_DURATION)
-//        uriMatcher.addURI(CONTENT_AUTHORITY, "${DurationContract.TABLE_NAME}/#", TASK_DURATION_ID)
+
+        uriMatcher.addURI(CONTENT_AUTHORITY, DurationContract.TABLE_NAME, TASK_DURATION)
+        uriMatcher.addURI(CONTENT_AUTHORITY, "${DurationContract.TABLE_NAME}/#", TASK_DURATION_ID)
 
     }
 
@@ -79,14 +79,14 @@ class Provider: ContentProvider() {
                 queryBuilder.appendWhere("${TimingContract.Columns._ID} = $timingId")
             }
 
-//            TASK_DURATION -> {
-//                queryBuilder.tables = DurationContract.TABLE_NAME
-//            }
-//            TASK_DURATION_ID ->{
-//                queryBuilder.tables = DurationContract.TABLE_NAME
-//                val durationId: Long = DurationContract.durationId(uri)
-//                queryBuilder.appendWhere("${DurationContract.Columns._ID} = $taskId")
-//            }
+            TASK_DURATION -> {
+                queryBuilder.tables = DurationContract.TABLE_NAME
+            }
+            TASK_DURATION_ID ->{
+                queryBuilder.tables = DurationContract.TABLE_NAME
+                val durationId: Long = DurationContract.UriBuilder.getDurationId(uri)
+                queryBuilder.appendWhere("${DurationContract.Columns._ID} = $durationId")
+            }
             else -> {
                 throw IllegalArgumentException("Unknown URI: $uri")
             }
@@ -107,8 +107,8 @@ class Provider: ContentProvider() {
 
             TIMINGS -> { return TimingContract.CONTENT_TYPE}
             TIMINGS_ID ->{ return TimingContract.CONTENT_ITEM_TYPE}
-//            TASK_DURATION -> { return TaskContract.CONTENT_TYPE}
-//            TASK_DURATION_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
+            TASK_DURATION -> { return TaskContract.CONTENT_TYPE}
+            TASK_DURATION_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
              else -> { throw IllegalArgumentException("Unknown URI: $uri") }
          }
     }
