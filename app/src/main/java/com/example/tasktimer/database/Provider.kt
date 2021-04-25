@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
 import android.util.Log
+import com.example.tasktimer.database.entity.Timing
 
 /**
 * Provider for the TaskTimer.
@@ -40,8 +41,8 @@ class Provider: ContentProvider() {
         // content://com.example.tasktimer.provider/Tasks/8
         uriMatcher.addURI(CONTENT_AUTHORITY, "${TaskContract.TABLE_NAME}/#", TASKS_ID)
 
-//        uriMatcher.addURI(CONTENT_AUTHORITY, TimingContract.TABLE_NAME, TIMINGS)
-//        uriMatcher.addURI(CONTENT_AUTHORITY, "${TimingContract.TABLE_NAME}/#", TIMINGS_ID)
+        uriMatcher.addURI(CONTENT_AUTHORITY, TimingContract.TABLE_NAME, TIMINGS)
+        uriMatcher.addURI(CONTENT_AUTHORITY, "${TimingContract.TABLE_NAME}/#", TIMINGS_ID)
 //
 //        uriMatcher.addURI(CONTENT_AUTHORITY, DurationContract.TABLE_NAME, TASK_DURATION)
 //        uriMatcher.addURI(CONTENT_AUTHORITY, "${DurationContract.TABLE_NAME}/#", TASK_DURATION_ID)
@@ -69,15 +70,15 @@ class Provider: ContentProvider() {
                 queryBuilder.appendWhere("${TaskContract.Columns._ID} = $taskId")
             }
 
-//            TIMINGS -> {
-//                queryBuilder.tables = TimingContract.TABLE_NAME
-//            }
-//            TIMINGS_ID ->{
-//                queryBuilder.tables = TimingContract.TABLE_NAME
-//                val timingId: Long = TimingContract.timingId(uri)
-//                queryBuilder.appendWhere("${TimingContract.Columns._ID} = $taskId")
-//            }
-//
+            TIMINGS -> {
+                queryBuilder.tables = TimingContract.TABLE_NAME
+            }
+            TIMINGS_ID ->{
+                queryBuilder.tables = TimingContract.TABLE_NAME
+                val timingId: Long = TimingContract.UriBuilder.getTimingId(uri)
+                queryBuilder.appendWhere("${TimingContract.Columns._ID} = $timingId")
+            }
+
 //            TASK_DURATION -> {
 //                queryBuilder.tables = DurationContract.TABLE_NAME
 //            }
@@ -104,8 +105,8 @@ class Provider: ContentProvider() {
 
              TASKS_ID -> TaskContract.CONTENT_ITEM_TYPE
 
-//            TIMINGS -> { return TaskContract.CONTENT_TYPE}
-//            TIMINGS_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
+            TIMINGS -> { return TimingContract.CONTENT_TYPE}
+            TIMINGS_ID ->{ return TimingContract.CONTENT_ITEM_TYPE}
 //            TASK_DURATION -> { return TaskContract.CONTENT_TYPE}
 //            TASK_DURATION_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
              else -> { throw IllegalArgumentException("Unknown URI: $uri") }
@@ -126,20 +127,17 @@ class Provider: ContentProvider() {
                     throw SQLException("Failed insert into $uri")
                 }
             }
-//            TASKS_ID -> {
-//
-//            }
-//            TIMINGS -> {
-//                db = openHelper.writableDatabase
-//                recordId = db.insert(TimingContract.BuildUri.buildTimingUri(recordId))
-//                if (recordId>=0) {
-//                    TaskContract.UriBuilder.buildTaskUri(recordId)
-//                } else {
-//                    throw SQLException("Failed insert into $uri")
-//                }
-//            }
 
-//            TIMINGS_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
+            TIMINGS -> {
+                db = openHelper.writableDatabase
+                recordId = db.insert(TimingContract.TABLE_NAME, null,values)
+                if (recordId>=0) {
+                    TimingContract.UriBuilder.buildTimingUri(recordId)
+                } else {
+                    throw SQLException("Failed insert into $uri")
+                }
+            }
+
 //            TASK_DURATION -> { return TaskContract.CONTENT_TYPE}
 //            TASK_DURATION_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
             else -> {
@@ -174,19 +172,19 @@ class Provider: ContentProvider() {
                 }
                 deletedEntries = db.delete(TaskContract.TABLE_NAME,selectionCriteria, selectionArgs)
             }
-//            TIMINGS -> {
-//                db = openHelper.writableDatabase
-//                deletedEntries = db.delete(TimingContract.TABLE_NAME,selection, selectionArgs)
-//            }
-//            TIMINGS_ID -> {
-//                db = openHelper.writableDatabase
-//                val timingId: Long = TimingContract.UriBuilder.getTaskId(uri)
-//                selectionCriteria = "TimingContract.Columns._ID = $timingId"
-//                if ((selection != null) && (selection.isNotEmpty())) {
-//                    selectionCriteria += " AND ($selection)"
-//                }
-//                deletedEntries = db.delete(TimingContract.TABLE_NAME,selectionCriteria, selectionArgs)
-//            }
+            TIMINGS -> {
+                db = openHelper.writableDatabase
+                deletedEntries = db.delete(TimingContract.TABLE_NAME,selection, selectionArgs)
+            }
+            TIMINGS_ID -> {
+                db = openHelper.writableDatabase
+                val timingId: Long = TimingContract.UriBuilder.getTimingId(uri)
+                selectionCriteria = "TimingContract.Columns._ID = $timingId"
+                if ((selection != null) && (selection.isNotEmpty())) {
+                    selectionCriteria += " AND ($selection)"
+                }
+                deletedEntries = db.delete(TimingContract.TABLE_NAME,selectionCriteria, selectionArgs)
+            }
             else -> {
                 throw IllegalArgumentException("Unknown URI: $uri")
             }
@@ -220,23 +218,24 @@ class Provider: ContentProvider() {
                 }
                 updatedEntries = db.update(TaskContract.TABLE_NAME,values,selectionCriteria, selectionArgs)
             }
-//            TIMINGS -> {
-//                db = openHelper.writableDatabase
-//                db.update(TimingContract.TABLE_NAME,values,selection, selectionArgs)
-//            }
-//            TIMINGS_ID -> {
-//                db = openHelper.writableDatabase
-//                val timingId: Long = TimingContract.UriBuilder.getTaskId(uri)
-//                selectionCriteria = "TimingContract.Columns._ID = $timingId"
-//                if ((selection != null) && (selection.isNotEmpty())) {
-//                    selectionCriteria += " AND ($selection)"
-//                }
-//                db.update(TimingContract.TABLE_NAME,values,selectionCriteria, selectionArgs)
-//            }
+            TIMINGS -> {
+                db = openHelper.writableDatabase
+                updatedEntries = db.update(TimingContract.TABLE_NAME,values,selection, selectionArgs)
+            }
+            TIMINGS_ID -> {
+                db = openHelper.writableDatabase
+                val timingId: Long = TimingContract.UriBuilder.getTimingId(uri)
+                selectionCriteria = "TimingContract.Columns._ID = $timingId"
+                if ((selection != null) && (selection.isNotEmpty())) {
+                    selectionCriteria += " AND ($selection)"
+                }
+                updatedEntries = db.update(TimingContract.TABLE_NAME,values,selectionCriteria, selectionArgs)
+            }
             else -> {
                 throw IllegalArgumentException("Unknown URI: $uri")
             }
         }
+
         if (updatedEntries > 0) {
             Log.d(TAG, "Updated $updatedEntries entries")
             context!!.contentResolver.notifyChange(uri,null)

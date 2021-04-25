@@ -9,16 +9,19 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.tasktimer.*
 import com.example.tasktimer.database.TaskContract
 import com.example.tasktimer.database.entity.Task
+import com.example.tasktimer.database.entity.Timing
+import com.example.tasktimer.debug.TestData
 import com.example.tasktimer.ui.about.AboutFragment
 import com.example.tasktimer.ui.search.SearchFragment
 import com.example.tasktimer.ui.settings.SettingsFragment
 import com.example.tasktimer.ui.tasks.TaskEditorActivityFragment
-import com.example.tasktimer.ui.tasks.TasksDurationFragment
+import com.example.tasktimer.ui.tasks.TasksFragment
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,6 +32,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
     private lateinit var bottomNavFab: FloatingActionButton
     private lateinit var addEditLayoutFragment: FrameLayout
     private lateinit var mainFragment: FrameLayout
+    private var currentTiming: Timing? = null
     companion object {
         private const val TAG = "MainActivity"
         const val DIALOG_ID_DELETE = 1
@@ -89,7 +93,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
         var selectedFragment = Fragment()
         when (item.itemId) {
             R.id.nav_tasks -> {
-                selectedFragment = TasksDurationFragment()
+                selectedFragment = TasksFragment()
             }
             R.id.nav_search -> {
                 selectedFragment = SearchFragment()
@@ -112,12 +116,17 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        if (BuildConfig.DEBUG) {
+            val generate = menu.findItem(R.id.action_generate_data)
+            generate.isVisible = true
+        }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_generate_data -> {
+                TestData.generateTestData(contentResolver)
                 true
             }
             android.R.id.home -> {
@@ -139,7 +148,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
             when (CACHED_BOTTOM_ITEM_ID) {
                 R.id.nav_tasks -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_layout, TasksDurationFragment()).commit()
+                        .replace(R.id.fragment_layout, TasksFragment()).commit()
                 }
                 R.id.nav_search -> {
                     supportFragmentManager.beginTransaction()
@@ -157,7 +166,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
         } else {
             CACHED_BOTTOM_ITEM_ID = R.id.nav_tasks
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_layout, TasksDurationFragment()).commit()
+                .replace(R.id.fragment_layout, TasksFragment()).commit()
         }
     }
 
@@ -181,8 +190,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
     }
 
     override fun onTaskLongClick(task: Task) {
-        Log.d(TAG, "onTaskLongClick: called")
-        Toast.makeText(this, "Task ${task._id} clicked",Toast.LENGTH_SHORT).show()
+        //Interface contract
     }
 
     override fun onSaveClicked() {
@@ -254,10 +262,11 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
         if (fragment == null || fragment.canClose()) {
             super.onBackPressed()
         } else {
-            showConfirmation(DIALOG_ID_CANCEL_EDIT)
+            showConfirmation(DIALOG_ID_CANCEL_EDIT_UP)
         }
 
     }
+
     private fun editTask(task: Task?) {
         Log.d(TAG, "editTask: starts")
         val fragment = TaskEditorActivityFragment()
@@ -272,6 +281,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
         }
         Log.d(TAG, "editTask: exiting")
     }
+
     private fun showConfirmation (dialogId: Int) {
         val dialog = AppDialog()
         val args = Bundle().also {

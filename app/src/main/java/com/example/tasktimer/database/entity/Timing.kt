@@ -10,7 +10,7 @@ import java.util.*
  *
  */
 
-data class Timing(private val id: Long? = null, private val task: Task, private var startTime: Long? = null, private var duration: Long? = null ): Serializable {
+data class Timing(val id: Long? = null, val task: Task, var startTime: Long? = null, var duration: Long? = null ): Serializable {
     companion object {
         private const val serialVersionUID: Long = 20210424
         private const val TAG = "Timing"

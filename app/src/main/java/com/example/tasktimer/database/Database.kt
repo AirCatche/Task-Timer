@@ -15,7 +15,7 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
     companion object{
         const val TAG = "Database"
         const val DATABASE_NAME = "TaskTimer.db"
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
 
         private var instance: Database? = null
         operator fun invoke(context: Context) = synchronized(this) {
@@ -37,18 +37,45 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
 
         Log.d(TAG, sql)
         db?.execSQL(sql)
+
+        addTimingTable(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d(TAG, "onUpgrade: starts")
         when(oldVersion) {
             1 ->{
-                //hehehe
+                addTimingTable(db)
             }
             else -> {
-                //ne hehehe
+                throw IllegalStateException("onUpgrade() with unknown newVersion: $newVersion")
             }
         }
         Log.d(TAG, "onUpgrade: ends")
     }
+
+    private fun addTimingTable (db: SQLiteDatabase?) {
+        var sql = "CREATE TABLE ${TimingContract.TABLE_NAME} (" +
+                "${TimingContract.Columns._ID} INTEGER PRIMARY KEY NOT NULL, " +
+                "${TimingContract.Columns.TIMINGS_TASK_ID} INTEGER NOT NULL, " +
+                "${TimingContract.Columns.TIMINGS_START_TIME} INTEGER, " +
+                "${TimingContract.Columns.TIMINGS_DURATION} INTEGER );"
+
+        Log.d(TAG, sql)
+        db?.execSQL(sql)
+
+        sql = "CREATE TRIGGER Remove_Task" +
+                " AFTER DELETE ON ${TaskContract.TABLE_NAME}" +
+                " FOR EACH ROW" +
+                " BEGIN" +
+                " DELETE FROM ${TimingContract.TABLE_NAME}" +
+                " WHERE ${TimingContract.Columns.TIMINGS_TASK_ID} = OLD.${TaskContract.Columns._ID}" +
+                "; END"
+
+        Log.d(TAG, sql)
+        db?.execSQL(sql)
+    }
+
+
+
 }
