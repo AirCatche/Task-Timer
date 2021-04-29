@@ -6,5 +6,34 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
+
+
+    <color name="lime_50">#F9FBE7</color>
+    <color name="lime_100">#F0F4C3</color>
+    <color name="lime_300">#DCE775</color>
+    <color name="lime_500">#CDDC39</color>
+    <color name="lime_700">#AFB42B</color>
+
+
+
+    <color name="brown_200">#BCAAA4</color>
+    <color name="brown_100">#D7CCC8</color>
+    <color name="brown_300">#A1887F</color>
+    <color name="brown_50">#EFEBE9</color>
+    <color name="brown_500">#795548</color>
+    <color name="brown_700">#5D4037</color>
+
+    <color name="light_green_500">#8bc34a</color>
+    <color name="light_green_200">#c5e1a5</color>
+    <color name="light_green_700">#689f38</color>
+
     <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
+<!--    <color name="white">#FFFFFFFF</color>-->
+<!--    <color name="white">#FFFFFFFF</color>-->
+<!--    <color name="white">#FFFFFFFF</color>-->
+<!--    <color name="white">#FFFFFFFF</color>-->
+<!--    <color name="white">#FFFFFFFF</color>-->
+
+
 </resources>

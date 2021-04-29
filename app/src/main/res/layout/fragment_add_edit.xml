@@ -1,61 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/csl_addtask_edit"
+    android:id="@+id/linear_add_edit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TaskEditorActivity">
-
-    <EditText
-        android:id="@+id/et_addtasks_name"
-        android:layout_width="0dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:orientation="vertical"
+    android:visibility="visible"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="parent"
+    >
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
         android:hint="@string/addtask_hint_name"
-        android:inputType="textNoSuggestions"
-        android:maxLength="64"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:boxCornerRadiusTopEnd="5dp"
+        app:boxCornerRadiusTopStart="5dp"
+        app:boxCornerRadiusBottomStart="5dp"
+        app:boxCornerRadiusBottomEnd="5dp"
+        >
+        <EditText
+            android:background="@drawable/et_input_custom_background"
+            android:id="@+id/et_addtasks_name"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:drawablePadding="12dp"
+            android:imeOptions="actionNext"
+            android:inputType="textNoSuggestions"
+            tools:ignore="LabelFor"
+            android:importantForAutofill="no" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/et_addtasks_description"
-        android:layout_width="0dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:ems="10"
-        android:hint="@string/addtask_hint_sortorder"
-        android:inputType="textMultiLine"
-        android:maxLength="256"
-        app:layout_constraintEnd_toEndOf="@+id/et_addtasks_name"
-        app:layout_constraintStart_toStartOf="@+id/et_addtasks_name"
-        app:layout_constraintTop_toBottomOf="@+id/et_addtasks_name" />
+        android:hint="@string/addtask_hint_description"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:boxCornerRadiusTopEnd="5dp"
+        app:boxCornerRadiusTopStart="5dp"
+        app:boxCornerRadiusBottomStart="5dp"
+        app:boxCornerRadiusBottomEnd="5dp"
+        >
+        <EditText
+            android:background="@drawable/et_input_custom_background"
+            android:id="@+id/et_addtasks_description"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:importantForAutofill="no"
+            android:drawablePadding="12dp"
+            android:inputType="textNoSuggestions"
+            tools:ignore="LabelFor" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/et_addtasks_sortorder"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:ems="10"
         android:hint="@string/addtask_hint_sortorder"
-        android:inputType="number"
-        android:maxLength="9"
-        app:layout_constraintStart_toStartOf="@+id/et_addtasks_description"
-        app:layout_constraintTop_toBottomOf="@+id/et_addtasks_description" />
-
-    <Button
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:boxCornerRadiusTopEnd="5dp"
+        app:boxCornerRadiusTopStart="5dp"
+        app:boxCornerRadiusBottomStart="5dp"
+        app:boxCornerRadiusBottomEnd="5dp"
+        >
+        <EditText
+            android:background="@drawable/et_input_custom_background"
+            android:id="@+id/et_addtasks_sortorder"
+            android:layout_width="match_parent"
+            android:ems="10"
+            android:maxLength="9"
+            android:layout_height="60dp"
+            android:importantForAutofill="no"
+            android:drawablePadding="12dp"
+            android:inputType="number"
+            tools:ignore="LabelFor" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:theme="@style/Theme.TaskTimer.BrownTheme"
         android:id="@+id/btn_addtasks_save"
+        android:src="@drawable/ic_baseline_save_64"
+        android:background="@drawable/btn_custom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/btn_addtask_save"
-        app:icon="@android:drawable/ic_menu_save"
-        app:layout_constraintEnd_toEndOf="@+id/et_addtasks_sortorder"
-        app:layout_constraintStart_toStartOf="@+id/et_addtasks_sortorder"
-        app:layout_constraintTop_toBottomOf="@+id/et_addtasks_sortorder" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        />
+</LinearLayout>

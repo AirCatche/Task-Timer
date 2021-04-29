@@ -1,4 +1,4 @@
-package com.example.tasktimer.ui
+package com.example.tasktimer.ui.tasks
 
 import android.database.Cursor
 import android.util.Log
@@ -13,7 +13,7 @@ import com.example.tasktimer.database.entity.Task
 import com.example.tasktimer.database.TaskContract
 import java.lang.IllegalStateException
 
-class CursorRecyclerViewAdapter(private var cursor: Cursor?,private val listener: OnTaskClickListener?) : RecyclerView.Adapter<CursorRecyclerViewAdapter.TaskViewHolder>() {
+class CursorRVAdapter(private var cursor: Cursor?, private val listener: OnTaskClickListener?) : RecyclerView.Adapter<CursorRVAdapter.TaskViewHolder>() {
     companion object {
         private const val TAG = "CursorRecyclerViewAdapt"
     }
@@ -23,7 +23,6 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?,private val listener
         return TaskViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.task_list_item, parent, false))
 
     }
-
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         if (cursor == null || cursor!!.count == 0) {
             holder.name.setText(R.string.instruction_heading)
@@ -34,15 +33,15 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?,private val listener
             if (!cursor!!.moveToPosition(position)) {
                 throw IllegalStateException("Couldn't move cursor to position $position")
             }
-            val task = Task(cursor!!.getLong(cursor!!.getColumnIndex(TaskContract.Columns._ID)),
+            val task = Task(cursor!!.getLong(cursor!!.getColumnIndex(TaskContract.Columns.ID)),
                             cursor!!.getString(cursor!!.getColumnIndex(TaskContract.Columns.TASKS_NAME)),
                             cursor!!.getString(cursor!!.getColumnIndex(TaskContract.Columns.TASKS_DESCRIPTION)),
                             cursor!!.getInt(cursor!!.getColumnIndex(TaskContract.Columns.TASKS_SORT_ORDER)))
-
             holder.name.text = task.name
             holder.description.text = task.description
             holder.editButton.visibility = View.VISIBLE
             holder.deleteButton.visibility = View.VISIBLE
+
             val buttonListener = View.OnClickListener {
                 when(it.id) {
                     R.id.ib_edit_task -> {
@@ -51,7 +50,6 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?,private val listener
                     R.id.ib_delete_task -> {
                         listener?.onDeleteTask(task)
                     }
-
                     else -> {
                         Log.d(TAG, "onBindViewHolder: Unexpected button id")
                     }
@@ -69,7 +67,6 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?,private val listener
             holder.deleteButton.setOnClickListener(buttonListener)
             holder.view.setOnLongClickListener(itemLongListener)
         }
-
     }
     override fun getItemCount(): Int {
          return if (cursor == null || cursor!!.count == 0) {
@@ -104,7 +101,6 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?,private val listener
         val description: TextView = itemView.findViewById(R.id.tv_task_description)
         val editButton: ImageButton = itemView.findViewById(R.id.ib_edit_task)
         val deleteButton: ImageButton = itemView.findViewById(R.id.ib_delete_task)
-
         val view: View = itemView
     }
 }

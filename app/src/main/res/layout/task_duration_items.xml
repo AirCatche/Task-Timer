@@ -6,15 +6,15 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/tv_heading_name"
+        android:id="@+id/tv_duration_item_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/tv_item_style"
         android:elevation="2dp"
         android:padding="1dp"
-        android:textAlignment="textStart"
-        app:layout_constraintEnd_toStartOf="@+id/tv_heading_start"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/tv_duration_item_start"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintHorizontal_weight="2"
@@ -22,32 +22,32 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_heading_start"
+        android:id="@+id/tv_duration_item_start"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:background="@drawable/tv_item_style"
         android:elevation="2dp"
         android:padding="1dp"
-        android:textAlignment="textStart"
-        app:layout_constraintBaseline_toBaselineOf="@+id/tv_heading_name"
-        app:layout_constraintEnd_toStartOf="@+id/tv_heading_duration"
+        android:textAlignment="center"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_duration_item_name"
+        app:layout_constraintEnd_toStartOf="@+id/tv_duration_item_duration"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@+id/tv_heading_name" />
+        app:layout_constraintStart_toEndOf="@+id/tv_duration_item_name" />
 
     <TextView
-        android:id="@+id/tv_heading_duration"
+        android:id="@+id/tv_duration_item_duration"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:background="@drawable/tv_item_style"
         android:elevation="2dp"
         android:padding="1dp"
-        android:textAlignment="textStart"
-        app:layout_constraintBaseline_toBaselineOf="@+id/tv_heading_start"
+        android:textAlignment="center"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_duration_item_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@+id/tv_heading_start" />
+        app:layout_constraintStart_toEndOf="@+id/tv_duration_item_start" />
 </androidx.constraintlayout.widget.ConstraintLayout>

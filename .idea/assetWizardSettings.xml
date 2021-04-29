@@ -307,7 +307,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/arrow_back/baseline_arrow_back_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/save/baseline_save_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -317,8 +317,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_baseline_arrow_back_24" />
-                            <entry key="sourceFile" value="C:\Users\MINIMAL\AndroidStudioProjects\TaskTimer" />
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="outputName" value="ic_trash_basket" />
+                            <entry key="sourceFile" value="C:\Users\MINIMAL\Downloads\trash-basket-svgrepo-com.svg" />
                           </map>
                         </option>
                       </PersistentState>

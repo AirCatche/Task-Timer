@@ -14,17 +14,17 @@ class TestData  {
 
         fun generateTestData (contentResolver: ContentResolver) {
             val SECS_IN_DAYS = 86400
-            val LOWER_BOUND = 100
-            val UPPER_BOUND = 500
+            val LOWER_BOUND = 10
+            val UPPER_BOUND = 50
             val MAX_DURATION = SECS_IN_DAYS / 6
 
-            val projection: Array<String> = arrayOf(TaskContract.Columns._ID)
+            val projection: Array<String> = arrayOf(TaskContract.Columns.ID)
             val uri = TaskContract.CONTENT_URI
             val cursor = contentResolver.query(uri, projection, null, null, null)
 
             if ((cursor != null) && (cursor.moveToNext())) {
                 do {
-                    val taskId: Long = cursor.getLong(cursor.getColumnIndex(TaskContract.Columns._ID))
+                    val taskId: Long = cursor.getLong(cursor.getColumnIndex(TaskContract.Columns.ID))
 
                     //generate timings between UPPER and LOWER bounds
 

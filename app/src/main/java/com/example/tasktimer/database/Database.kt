@@ -10,16 +10,12 @@ import android.util.Log
  * The only class that should use DB is [Provider].
  */
 
-class Database private constructor(context: Context) : SQLiteOpenHelper(context,
-    DATABASE_NAME,
-    null,
-    DATABASE_VERSION) {
+class Database private constructor(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object{
         const val TAG = "Database"
         const val DATABASE_NAME = "TaskTimer.db"
-        const val DATABASE_VERSION = 2
-
+        const val DATABASE_VERSION = 3
         private var instance: Database? = null
         operator fun invoke(context: Context) = synchronized(this) {
             if (instance == null) {
@@ -27,20 +23,18 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
             }
             instance
         }
-
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
         Log.d(TAG, "onCreate: starts")
         val sql = "CREATE TABLE ${TaskContract.TABLE_NAME} (" +
-                "${TaskContract.Columns._ID} INTEGER PRIMARY KEY NOT NULL, " +
+                "${TaskContract.Columns.ID} INTEGER PRIMARY KEY NOT NULL, " +
                 "${TaskContract.Columns.TASKS_NAME} TEXT NOT NULL, " +
                 "${TaskContract.Columns.TASKS_DESCRIPTION} TEXT, " +
                 "${TaskContract.Columns.TASKS_SORT_ORDER} INTEGER );"
 
         Log.d(TAG, sql)
         db?.execSQL(sql)
-
         addTimingTable(db)
         addDurationView(db)
     }
@@ -63,7 +57,7 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
 
     private fun addTimingTable(db: SQLiteDatabase?) {
         var sql = "CREATE TABLE ${TimingContract.TABLE_NAME} (" +
-                "${TimingContract.Columns._ID} INTEGER PRIMARY KEY NOT NULL, " +
+                "${TimingContract.Columns.ID} INTEGER PRIMARY KEY NOT NULL, " +
                 "${TimingContract.Columns.TIMINGS_TASK_ID} INTEGER NOT NULL, " +
                 "${TimingContract.Columns.TIMINGS_START_TIME} INTEGER, " +
                 "${TimingContract.Columns.TIMINGS_DURATION} INTEGER );"
@@ -76,7 +70,7 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
                 " FOR EACH ROW" +
                 " BEGIN" +
                 " DELETE FROM ${TimingContract.TABLE_NAME}" +
-                " WHERE ${TimingContract.Columns.TIMINGS_TASK_ID} = OLD.${TaskContract.Columns._ID}" +
+                " WHERE ${TimingContract.Columns.TIMINGS_TASK_ID} = OLD.${TaskContract.Columns.ID}" +
                 "; END"
 
         Log.d(TAG, sql)
@@ -97,7 +91,7 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
          GROUP BY Tasks._id, StartDate;
          */
         val sSQL = ("CREATE VIEW " + DurationContract.TABLE_NAME
-                + " AS SELECT " + TimingContract.TABLE_NAME + "." + TimingContract.Columns._ID + ", "
+                + " AS SELECT " + TimingContract.TABLE_NAME + "." + TimingContract.Columns.ID + ", "
                 + TaskContract.TABLE_NAME + "." + TaskContract.Columns.TASKS_NAME + ", "
                 + TaskContract.TABLE_NAME + "." + TaskContract.Columns.TASKS_DESCRIPTION + ", "
                 + TimingContract.TABLE_NAME + "." + TimingContract.Columns.TIMINGS_START_TIME + ","
@@ -107,7 +101,7 @@ class Database private constructor(context: Context) : SQLiteOpenHelper(context,
                 + " SUM(" + TimingContract.TABLE_NAME + "." + TimingContract.Columns.TIMINGS_DURATION + ")"
                 + " AS " + DurationContract.Columns.DURATION_DURATION
                 + " FROM " + TaskContract.TABLE_NAME + " JOIN " + TimingContract.TABLE_NAME
-                + " ON " + TaskContract.TABLE_NAME + "." + TaskContract.Columns._ID + " = "
+                + " ON " + TaskContract.TABLE_NAME + "." + TaskContract.Columns.ID + " = "
                 + TimingContract.TABLE_NAME) + ".${TimingContract.Columns.TIMINGS_TASK_ID} GROUP BY " +
                 "${DurationContract.Columns.DURATION_START_DATE}, ${DurationContract.Columns.DURATION_NAME};"
         db?.execSQL(sSQL)

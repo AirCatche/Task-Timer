@@ -10,7 +10,6 @@ class TimingContract {
         const val TABLE_NAME = "Timings"
         //Uri access to Timings table
         val CONTENT_URI: Uri = Uri.withAppendedPath(Provider.CONTENT_AUTHORITY_URI, TABLE_NAME)
-
         const val CONTENT_TYPE = "vnd.android.cursor.dir/vnd.${Provider.CONTENT_AUTHORITY}.$TABLE_NAME"
         const val CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.${Provider.CONTENT_AUTHORITY}.$TABLE_NAME"
     }
@@ -18,7 +17,7 @@ class TimingContract {
     class Columns private constructor() : BaseColumns {
         companion object{
             //Timings fields
-            const val _ID = BaseColumns._ID
+            const val ID = BaseColumns._ID
             const val TIMINGS_TASK_ID = "TaskId"
             const val TIMINGS_START_TIME = "StartTime"
             const val TIMINGS_DURATION = "Duration"

@@ -31,6 +31,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:backgroundTint="@color/brown_500"
+        android:background="@color/brown_500"
         app:fabCradleMargin="0dp"
         app:fabCradleRoundedCornerRadius="16dp"
         app:fabCradleVerticalOffset="0dp"
@@ -40,7 +42,7 @@
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent"
+
             app:itemIconTint="@drawable/bottom_nav_icon_color_selector"
             app:itemTextColor="@drawable/bottom_nav_icon_color_selector"
             app:labelVisibilityMode="unlabeled"

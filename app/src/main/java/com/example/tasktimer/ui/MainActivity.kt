@@ -9,19 +9,21 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.tasktimer.*
 import com.example.tasktimer.database.TaskContract
 import com.example.tasktimer.database.entity.Task
 import com.example.tasktimer.database.entity.Timing
 import com.example.tasktimer.debug.TestData
 import com.example.tasktimer.ui.about.AboutFragment
-import com.example.tasktimer.ui.search.SearchFragment
+import com.example.tasktimer.ui.duration.DurationFragment
 import com.example.tasktimer.ui.settings.SettingsFragment
+import com.example.tasktimer.ui.tasks.OnSaveClicked
+import com.example.tasktimer.ui.tasks.OnTaskClickListener
 import com.example.tasktimer.ui.tasks.TaskEditorActivityFragment
 import com.example.tasktimer.ui.tasks.TasksFragment
+import com.google.android.material.bottomappbar.BottomAppBar
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -30,6 +32,7 @@ import java.lang.AssertionError
 class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, DialogEvents {
     private lateinit var bottomNav: BottomNavigationView
     private lateinit var bottomNavFab: FloatingActionButton
+    private lateinit var bottomAppBar: BottomAppBar
     private lateinit var addEditLayoutFragment: FrameLayout
     private lateinit var mainFragment: FrameLayout
     private var currentTiming: Timing? = null
@@ -55,7 +58,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
         setSupportActionBar(findViewById(R.id.toolbar))
         addEditLayoutFragment = findViewById(R.id.fragment_task_details)
         mainFragment = findViewById(R.id.fragment_layout)
-
+        bottomAppBar = findViewById(R.id.bottom_app_bar)
         bottomNav = findViewById(R.id.bottom_navigation)
         bottomNavFab = findViewById(R.id.fab_create)
         bottomNav.background = null
@@ -69,57 +72,9 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
         Log.d(TAG, "onCreate: ends")
     }
 
-    private fun setScreenFragment() {
-        twoPane = (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-        Log.d(TAG, "onCreate: two pane is $twoPane")
-        val editing = supportFragmentManager.findFragmentById(R.id.fragment_task_details) != null
-        Log.d(TAG, "onCreate: editing is $editing")
-
-        if (twoPane) {
-            Log.d(TAG, "onCreate: twoPane mode")
-            mainFragment.visibility = View.VISIBLE
-            addEditLayoutFragment.visibility = View.VISIBLE
-        } else if (editing) {
-            Log.d(TAG, "onCreate: single pane")
-            mainFragment.visibility = View.GONE
-        } else {
-            Log.d(TAG, "onCreate: single pane no editing")
-            mainFragment.visibility = View.VISIBLE
-            addEditLayoutFragment.visibility = View.GONE
-        }
-    }
-
-    private val navListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        var selectedFragment = Fragment()
-        when (item.itemId) {
-            R.id.nav_tasks -> {
-                selectedFragment = TasksFragment()
-            }
-            R.id.nav_search -> {
-                selectedFragment = SearchFragment()
-            }
-            R.id.nav_settings -> {
-                selectedFragment = SettingsFragment()
-            }
-            R.id.nav_about -> {
-                selectedFragment = AboutFragment()
-            }
-        }
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_layout, selectedFragment).commit()
-        CACHED_BOTTOM_ITEM_ID = item.itemId
-        return@OnNavigationItemSelectedListener true
-    }
-    private val fabListener = View.OnClickListener {
-        editTask(null)
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-//        if (BuildConfig.DEBUG) {
-//            val generate = menu.findItem(R.id.action_generate_data)
-//            generate.isVisible = true
-//        }
         return true
     }
 
@@ -150,9 +105,9 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_layout, TasksFragment()).commit()
                 }
-                R.id.nav_search -> {
+                R.id.nav_duration -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_layout, SearchFragment()).commit()
+                        .replace(R.id.fragment_layout, DurationFragment()).commit()
                 }
                 R.id.nav_settings -> {
                     supportFragmentManager.beginTransaction()
@@ -172,6 +127,8 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
 
     override fun onEditClick(task: Task) {
         editMode = true
+        bottomAppBar.visibility = View.GONE
+        bottomNavFab.visibility = View.GONE
         editTask(task)
     }
 
@@ -180,11 +137,9 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
         val dialog = AppDialog()
         val dialogArgs = Bundle()
         dialogArgs.putInt(AppDialog.DIALOG_ID, DIALOG_ID_DELETE)
-        dialogArgs.putString(AppDialog.DIALOG_MESSAGE,
-            getString(R.string.deldiag_message, task._id, task.name))
+        dialogArgs.putString(AppDialog.DIALOG_MESSAGE, getString(R.string.deldiag_message, task._id, task.name))
         dialogArgs.putInt(AppDialog.DIALOG_POSITIVE_RID, (R.string.deldiag_positive_caption))
         dialogArgs.putLong("TaskId", task._id)
-
         dialog.arguments = dialogArgs
         dialog.show(supportFragmentManager, null)
     }
@@ -194,11 +149,12 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
     }
 
     override fun onSaveClicked() {
+        bottomAppBar.visibility = View.VISIBLE
+        bottomNavFab.visibility = View.VISIBLE
         val fragment = supportFragmentManager.findFragmentById(R.id.fragment_task_details)
         fragment?.let {
             supportFragmentManager.beginTransaction().remove(it).commit()
         }
-
         if (!twoPane) {
             addEditLayoutFragment.visibility = View.GONE
             mainFragment.visibility = View.VISIBLE
@@ -209,6 +165,7 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
         Log.d(TAG, "onPositiveDialogResult: ")
         when (dialogId) {
             DIALOG_ID_DELETE -> {
+
                 val taskId: Long = args.getLong("TaskId")
                 if (BuildConfig.DEBUG && taskId == 0L) throw AssertionError("Task ID is zero")
                 contentResolver.delete(TaskContract.UriBuilder.buildTaskUri(taskId), null, null)
@@ -225,6 +182,8 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
 
     override fun onNegativeDialogResult(dialogId: Int, args: Bundle) {
         Log.d(TAG, "onNegativeDialogResult: ")
+        bottomAppBar.visibility = View.VISIBLE
+        bottomNavFab.visibility = View.VISIBLE
         when (dialogId) {
             DIALOG_ID_DELETE -> {
                 //no action required
@@ -257,7 +216,6 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
 
     override fun onBackPressed() {
         Log.d(TAG, "onBackPressed: starts")
-
         val fragment: TaskEditorActivityFragment? = supportFragmentManager.findFragmentById(R.id.fragment_task_details) as TaskEditorActivityFragment?
         if (fragment == null || fragment.canClose()) {
             super.onBackPressed()
@@ -265,6 +223,16 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
             showConfirmation(DIALOG_ID_CANCEL_EDIT_UP)
         }
 
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        outState.putInt(CACHED_BOTTOM_ITEM_KEY, bottomNav.selectedItemId)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        bottomNav.selectedItemId = savedInstanceState.getInt(CACHED_BOTTOM_ITEM_KEY)
     }
 
     private fun editTask(task: Task?) {
@@ -290,18 +258,68 @@ class MainActivity : AppCompatActivity(), OnTaskClickListener, OnSaveClicked, Di
             it.putInt(AppDialog.DIALOG_POSITIVE_RID, R.string.edinDiag_positive_caption)
             it.putInt(AppDialog.DIALOG_NEGATIVE_RID, R.string.edinDiag_negative_caption)
         }
-
         dialog.arguments = args
         dialog.show(supportFragmentManager, null)
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-        outState.putInt(CACHED_BOTTOM_ITEM_KEY, bottomNav.selectedItemId)
+
+    private fun setScreenFragment() {
+        twoPane = (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        Log.d(TAG, "onCreate: two pane is $twoPane")
+        val editing = supportFragmentManager.findFragmentById(R.id.fragment_task_details) != null
+        val viewDuration = supportFragmentManager.findFragmentById(R.id.fragment_layout) is DurationFragment
+
+        Log.d(TAG, "onCreate: editing is $editing")
+
+        if (twoPane && viewDuration) {
+            mainFragment.visibility = View.VISIBLE
+            addEditLayoutFragment.visibility = View.GONE
+        } else if (twoPane) {
+            Log.d(TAG, "onCreate: twoPane mode")
+            mainFragment.visibility = View.VISIBLE
+            addEditLayoutFragment.visibility = View.VISIBLE
+        }
+        else if (editing) {
+            Log.d(TAG, "onCreate: single pane")
+            mainFragment.visibility = View.GONE
+        } else {
+            Log.d(TAG, "onCreate: single pane no editing")
+            mainFragment.visibility = View.VISIBLE
+            addEditLayoutFragment.visibility = View.GONE
+        }
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        bottomNav.selectedItemId = savedInstanceState.getInt(CACHED_BOTTOM_ITEM_KEY)
+    private val navListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        var selectedFragment = Fragment()
+        when (item.itemId) {
+            R.id.nav_tasks -> {
+                selectedFragment = TasksFragment()
+            }
+            R.id.nav_duration -> {
+                selectedFragment = DurationFragment()
+            }
+            R.id.nav_settings -> {
+                selectedFragment = SettingsFragment()
+            }
+            R.id.nav_about -> {
+                selectedFragment = AboutFragment()
+            }
+        }
+        if (twoPane && selectedFragment is TasksFragment) {
+            mainFragment.visibility = View.VISIBLE
+            addEditLayoutFragment.visibility = View.VISIBLE
+        } else {
+            mainFragment.visibility = View.VISIBLE
+            addEditLayoutFragment.visibility = View.GONE
+        }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_layout, selectedFragment).commit()
+        CACHED_BOTTOM_ITEM_ID = item.itemId
+        return@OnNavigationItemSelectedListener true
+    }
+    private val fabListener = View.OnClickListener {
+        bottomAppBar.visibility = View.GONE
+        bottomNavFab.visibility = View.GONE
+        editTask(null)
     }
 }

@@ -18,7 +18,7 @@ class DurationContract {
     class Columns private constructor() : BaseColumns {
         companion object{
             //Timings fields
-            const val _ID = BaseColumns._ID
+            const val ID = BaseColumns._ID
             const val DURATION_NAME = TaskContract.Columns.TASKS_NAME
             const val DURATION_DESCRIPTION = TaskContract.Columns.TASKS_DESCRIPTION
             const val DURATION_START_TIME = TimingContract.Columns.TIMINGS_START_TIME

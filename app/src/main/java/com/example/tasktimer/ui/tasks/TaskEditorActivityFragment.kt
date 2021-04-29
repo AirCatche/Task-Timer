@@ -4,18 +4,15 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
+import android.view.*
 import android.widget.EditText
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import com.example.tasktimer.R
 import com.example.tasktimer.database.TaskContract
 import com.example.tasktimer.database.entity.Task
-import com.example.tasktimer.ui.OnSaveClicked
 import java.lang.ClassCastException
 
 class TaskEditorActivityFragment : Fragment() {
@@ -23,7 +20,7 @@ class TaskEditorActivityFragment : Fragment() {
     private lateinit var name: EditText
     private lateinit var description: EditText
     private lateinit var sortOrder: EditText
-    private lateinit var save: Button
+    private lateinit var save: AppCompatImageButton
     private var saveListener: OnSaveClicked? = null
     private var fragmentMode: FragmentEditMode = FragmentEditMode.ADD
     companion object {
@@ -56,6 +53,8 @@ class TaskEditorActivityFragment : Fragment() {
         actionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG, "onCreateView: starts")
         val view = inflater.inflate(R.layout.fragment_add_edit, container, false)
@@ -66,14 +65,15 @@ class TaskEditorActivityFragment : Fragment() {
 
         val args = arguments
         Log.d(TAG, "onCreateView: $args")
-        val sortOrderValue = if (sortOrder.length() > 0) {
-            sortOrder.text.toString().toInt()
-        } else {
-            0
-        }
+
 
         val task = editTask(args)
         save.setOnClickListener {
+            val sortOrderValue = if (sortOrder.length() != 0) {
+                sortOrder.text.toString().toInt()
+            } else {
+                1
+            }
             val contentResolver = activity?.contentResolver
             val values = ContentValues()
             when(fragmentMode) {

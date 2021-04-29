@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
 import android.util.Log
-import com.example.tasktimer.database.entity.Timing
 
 /**
 * Provider for the TaskTimer.
@@ -27,8 +26,6 @@ class Provider: ContentProvider() {
         private const val TASKS_ID = 101
         private const val TIMINGS = 200
         private const val TIMINGS_ID = 201
-        private const val TASK_TIMING = 300
-        private const val TASK_TIMING_ID = 301
         private const val TASK_DURATION = 400
         private const val TASK_DURATION_ID = 401
         val CONTENT_AUTHORITY_URI = Uri.parse("content://$CONTENT_AUTHORITY")!!
@@ -67,7 +64,7 @@ class Provider: ContentProvider() {
             TASKS_ID ->{
                 queryBuilder.tables = TaskContract.TABLE_NAME
                 val taskId = TaskContract.UriBuilder.getTaskId(uri)
-                queryBuilder.appendWhere("${TaskContract.Columns._ID} = $taskId")
+                queryBuilder.appendWhere("${TaskContract.Columns.ID} = $taskId")
             }
 
             TIMINGS -> {
@@ -76,7 +73,7 @@ class Provider: ContentProvider() {
             TIMINGS_ID ->{
                 queryBuilder.tables = TimingContract.TABLE_NAME
                 val timingId: Long = TimingContract.UriBuilder.getTimingId(uri)
-                queryBuilder.appendWhere("${TimingContract.Columns._ID} = $timingId")
+                queryBuilder.appendWhere("${TimingContract.Columns.ID} = $timingId")
             }
 
             TASK_DURATION -> {
@@ -85,7 +82,7 @@ class Provider: ContentProvider() {
             TASK_DURATION_ID ->{
                 queryBuilder.tables = DurationContract.TABLE_NAME
                 val durationId: Long = DurationContract.UriBuilder.getDurationId(uri)
-                queryBuilder.appendWhere("${DurationContract.Columns._ID} = $durationId")
+                queryBuilder.appendWhere("${DurationContract.Columns.ID} = $durationId")
             }
             else -> {
                 throw IllegalArgumentException("Unknown URI: $uri")
@@ -101,15 +98,13 @@ class Provider: ContentProvider() {
 
     override fun getType(uri: Uri): String {
         return when(uriMatcher.match(uri)) {
-             TASKS -> TaskContract.CONTENT_TYPE
-
-             TASKS_ID -> TaskContract.CONTENT_ITEM_TYPE
-
-            TIMINGS -> { return TimingContract.CONTENT_TYPE}
-            TIMINGS_ID ->{ return TimingContract.CONTENT_ITEM_TYPE}
-            TASK_DURATION -> { return TaskContract.CONTENT_TYPE}
-            TASK_DURATION_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
-             else -> { throw IllegalArgumentException("Unknown URI: $uri") }
+            TASKS -> TaskContract.CONTENT_TYPE
+            TASKS_ID -> TaskContract.CONTENT_ITEM_TYPE
+            TIMINGS -> TimingContract.CONTENT_TYPE
+            TIMINGS_ID -> TimingContract.CONTENT_ITEM_TYPE
+            TASK_DURATION -> DurationContract.CONTENT_TYPE
+            TASK_DURATION_ID ->DurationContract.CONTENT_ITEM_TYPE
+             else ->  throw IllegalArgumentException("Unknown URI: $uri")
          }
     }
 
@@ -137,9 +132,6 @@ class Provider: ContentProvider() {
                     throw SQLException("Failed insert into $uri")
                 }
             }
-
-//            TASK_DURATION -> { return TaskContract.CONTENT_TYPE}
-//            TASK_DURATION_ID ->{ return TaskContract.CONTENT_ITEM_TYPE}
             else -> {
                 throw IllegalArgumentException("Unknown URI: $uri")
             }
@@ -166,7 +158,7 @@ class Provider: ContentProvider() {
             TASKS_ID -> {
                 db = openHelper.writableDatabase
                 val taskId: Long = TaskContract.UriBuilder.getTaskId(uri)
-                selectionCriteria = "${TaskContract.Columns._ID} = $taskId"
+                selectionCriteria = "${TaskContract.Columns.ID} = $taskId"
                 if ((selection != null) && (selection.isNotEmpty())) {
                     selectionCriteria += " AND ($selection)"
                 }
@@ -212,7 +204,7 @@ class Provider: ContentProvider() {
             TASKS_ID -> {
                 db = openHelper.writableDatabase
                 val taskId: Long = TaskContract.UriBuilder.getTaskId(uri)
-                selectionCriteria = "${TaskContract.Columns._ID} = $taskId"
+                selectionCriteria = "${TaskContract.Columns.ID} = $taskId"
                 if ((selection != null) && (selection.isNotEmpty())) {
                     selectionCriteria += " AND ($selection)"
                 }
